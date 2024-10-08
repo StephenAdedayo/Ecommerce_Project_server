@@ -13,8 +13,16 @@ const addProduct = async (req, res) => {
         const image3 = req.files.image3 && req.files.image3[0]
         const image4 = req.files.image4 && req.files.image4[0]
 
+    //    this will post all the images and show undefined for path wiht no image
+        console.log(image1, image2, image3, image4); 
+        
+
         // checking if item is undefined and not adding it to the db
         const images = [image1, image2, image3, image4].filter((item) => item !== undefined) 
+
+        // this will post all only the images and show nothing for the path with no image
+        console.log(images);
+        
         
         let imagesUrl = await Promise.all(
             images.map(async (item) => {
@@ -73,12 +81,35 @@ const listProduct = async (req, res) => {
 
 // function for removing product
 const removeProduct = async (req, res) => {
+    
 
+    try {
+
+        await productModel.findByIdAndDelete(req.body.id)
+
+        res.json({success : true, message : 'Product Removed'})
+        
+    } catch (error) {
+        res.json({success: false, message : error.message})
+        console.log(error);
+    }
+   
 }
 
 
 // function for single product info
 const singleProduct = async (req, res) => {
+    
+   try {
+     const {productId} = req.body
+
+     const product = await productModel.findById(productId)
+     res.json({success : true, data : product})
+
+   } catch (error) {
+    res.json({success: false, message : error.message})
+    console.log(error);
+   }
 
 }
 
